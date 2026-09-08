@@ -6,7 +6,8 @@ A GenLayer intelligent contract that transforms static agreements into living, m
 
 - **Contract Address:** `0x1e52Df397E8230b598e09c0B55338C51bd5555e4`
 - **Explorer Link:** [View on GenLayer Studio](https://explorer-studio.genlayer.com/address/0x1e52Df397E8230b598e09c0B55338C51bd5555e4)
-- **Source Code:** [View on GitHub](https://github.com/Dark-Brain07/PactPilot)
+- **Live Application:** [https://pactpilot.vercel.app](https://pactpilot.vercel.app)
+- **Source Code:** [View on GitHub](https://github.com/Dark-Brain07/pactpilot)
 
 ---
 

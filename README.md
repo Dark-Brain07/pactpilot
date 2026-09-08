@@ -4,6 +4,7 @@ PactPilot is a GenLayer temporal commercial assurance primitive. It binds a boun
 
 ## Live Deployment
 
+- **Production App:** [https://pactpilot.vercel.app](https://pactpilot.vercel.app) · [V2 Monitor Console](https://pactpilot.vercel.app/monitor)
 - **Network:** GenLayer StudioNet (Chain ID `61999`)
 - **Contract Address:** [`0x1e52Df397E8230b598e09c0B55338C51bd5555e4`](https://explorer-studio.genlayer.com/address/0x1e52Df397E8230b598e09c0B55338C51bd5555e4)
 - **Explorer Link:** [https://explorer-studio.genlayer.com/address/0x1e52Df397E8230b598e09c0B55338C51bd5555e4](https://explorer-studio.genlayer.com/address/0x1e52Df397E8230b598e09c0B55338C51bd5555e4)
