@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { decodeReturnedId } from '../lib/receipt.ts';
 
-const address = '0x03B1d1c9761A8EabfB365dB42AE2F513575c5D89';
+const address = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x1e52Df397E8230b598e09c0B55338C51bd5555e4';
 const reportPath = 'docs/v2-suite-results.json';
 if (existsSync(reportPath)) throw new Error('Report already exists: inspect it before any new run; no automatic duplicate writes.');
 async function readTestWalletInputs() {
