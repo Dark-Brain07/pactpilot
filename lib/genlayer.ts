@@ -36,9 +36,7 @@ export async function writeContract(functionName:string,args:unknown[]=[]):Promi
   let hash="";
   try{
     const accounts=await window.ethereum.request({method:"eth_requestAccounts"}) as string[];
-    if(!accounts||!accounts[0])return{success:false,error:"No account found in wallet."};
     const client=createClient({chain:chains[network]??studionet,provider:window.ethereum,account:accounts[0] as `0x${string}`}) as unknown as RuntimeClient;
-    if(client.connect)await client.connect(network);
     const raw=await client.writeContract({address:address(),functionName,args,value:BigInt(0)});hash=typeof raw==="string"?raw:raw.txId;
     const receipt=await client.waitForTransactionReceipt({hash:hash as `0x${string}`,status:TransactionStatus.FINALIZED,interval:2000,retries:600});
     const transaction=await client.getTransaction({hash:hash as `0x${string}`});
