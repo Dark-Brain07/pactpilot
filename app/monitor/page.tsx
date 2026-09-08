@@ -36,6 +36,18 @@ export default function Monitor(){
       if(!ver){setNotice({tone:"error",text:"Agreement version is required (e.g. v1)."});return;}
       if(!sha||sha.length!==64||!/^[0-9a-f]{64}$/.test(sha)){setNotice({tone:"error",text:"Clause bundle SHA-256 must be exactly 64 lowercase hexadecimal characters."});return;}
     }
+    if(method==="accept_agreement"){
+      const agreeId=String(args[0]||"");
+      if(!agreeId){setNotice({tone:"error",text:"Agreement ID is required to accept."});return;}
+      const verified=await readContract("get_agreement",[agreeId]);
+      const data=verified.success?unwrap<{accepted:boolean;owner:string;counterparty:string}>(verified.data):null;
+      if(!data){setNotice({tone:"error",text:`Agreement #${agreeId} was not found.`});return;}
+      if(data.accepted){setNotice({tone:"error",text:`Agreement #${agreeId} is already accepted.`});return;}
+      if(wallet&&data.counterparty&&data.counterparty.toLowerCase()!==wallet.toLowerCase()){
+        setNotice({tone:"error",text:`Only the counterparty wallet (${data.counterparty.slice(0,6)}…${data.counterparty.slice(-4)}) can accept this agreement. You are currently connected as ${wallet.slice(0,6)}…${wallet.slice(-4)} (the Owner). Please switch to the counterparty wallet in MetaMask first.`});
+        return;
+      }
+    }
     if(method==="add_obligation"){
       const agreeId=String(args[0]||"");
       if(!agreeId){setNotice({tone:"error",text:"Agreement ID is required before adding obligations."});return;}
