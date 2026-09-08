@@ -36,6 +36,7 @@ export async function writeContract(functionName:string,args:unknown[]=[]):Promi
   let hash="";
   try{
     const accounts=await window.ethereum.request({method:"eth_requestAccounts"}) as string[];
+    if(!accounts||!accounts[0])return{success:false,error:"No account found in wallet."};
     const client=createClient({chain:chains[network]??studionet,provider:window.ethereum,account:accounts[0] as `0x${string}`}) as unknown as RuntimeClient;
     if(client.connect)await client.connect(network);
     const raw=await client.writeContract({address:address(),functionName,args,value:BigInt(0)});hash=typeof raw==="string"?raw:raw.txId;
@@ -43,6 +44,9 @@ export async function writeContract(functionName:string,args:unknown[]=[]):Promi
     const transaction=await client.getTransaction({hash:hash as `0x${string}`});
     const failure=finalizedFailure(transaction);if(failure)return{success:false,hash,error:failure,receipt,transaction};
     return{success:true,hash,data:receipt,receipt,transaction};
-  }catch(error){return{success:false,hash,error:error instanceof Error?error.message:"Contract write failed."};}
+  }catch(error:any){
+    const msg = error?.shortMessage || error?.details || error?.data?.message || error?.message || (typeof error === "string" ? error : "Contract write failed.");
+    return{success:false,hash,error:msg};
+  }
 }
 export function unwrap<T>(value:unknown):T|null{try{if(typeof value==="string")return JSON.parse(value) as T;if(value&&typeof value==="object"&&"result" in value)return unwrap<T>((value as {result:unknown}).result);return value as T;}catch{return null;}}
