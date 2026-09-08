@@ -1,0 +1,33 @@
+{
+  "name": "pactpilot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "npx tsx --test lib/receipt.test.ts lib/finality.test.ts",
+    "deploy:studionet": "node scripts/deploy.mjs",
+    "test:live": "node scripts/live-lifecycle.mjs",
+    "test:failure-live": "node scripts/failure-controls.mjs",
+    "test:v2-suite": "node scripts/v2-suite.mjs"
+  },
+  "dependencies": {
+    "genlayer-js": "1.1.8",
+    "lucide-react": "^0.468.0",
+    "next": "^16.3.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.3.2",
+    "typescript": "^5"
+  },
+  "overrides": { "sharp": "0.35.3" }
+}

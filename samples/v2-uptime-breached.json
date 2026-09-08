@@ -1,0 +1,11 @@
+{
+  "fixture_type": "synthetic deterministic test scenario, not real vendor telemetry",
+  "service": "PactPilot Demo API",
+  "agreement_version": "v1",
+  "observation_window": "2026-09-04T00:00:00Z/2026-09-05T00:00:00Z",
+  "coverage": "The simulated availability record covers every instant of this interval, including any fully contained five-minute checkpoint.",
+  "availability": "complete outage throughout the entire simulated interval",
+  "availability_percent": 0,
+  "material_incidents": ["Every API endpoint was inaccessible throughout the simulated interval; all requests failed and no service was available."],
+  "service_details": "This was continuous complete loss of service, not a minor degradation or a missing report."
+}

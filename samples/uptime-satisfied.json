@@ -1,0 +1,6 @@
+{
+  "service": "PactPilot Demo API",
+  "observation_window": "2026-09-01T00:00:00Z/2026-09-01T01:00:00Z",
+  "availability": "operational",
+  "material_incidents": []
+}

@@ -1,0 +1,19 @@
+#### PactPilot
+
+**Title:** PactPilot - Autonomous Commercial Assurance & Obligation Monitoring Protocol
+**Description:**
+A GenLayer intelligent contract that transforms static agreements into living, monitored obligations with checkpoint schedules and approved public web sources. Counterparties bind themselves to exact immutable obligation digests before checkpoints begin. Independent validators independently fetch and interpret external evidence (using gl.nondet.web.get and LLM prompt execution) and reach consensus on semantic status (SATISFIED, AT_RISK, BREACHED, or UNRESOLVED) using GenLayer's comparative equivalence principle (gl.eq_principle.prompt_comparative).
+
+- **Contract Address:** `0x1e52Df397E8230b598e09c0B55338C51bd5555e4`
+- **Explorer Link:** [View on GenLayer Studio](https://explorer-studio.genlayer.com/address/0x1e52Df397E8230b598e09c0B55338C51bd5555e4)
+- **Source Code:** [View on GitHub](https://github.com/Dark-Brain07/PactPilot)
+
+---
+
+### Audit & Verification Results
+
+1. **Storage Pre-Extraction Audit:** PASS. Non-deterministic closure `evaluate()` does not read `self` or contract state; all inputs are pre-extracted into local variables.
+2. **Fallback & Fail-Closed Audit:** PASS. Missing, malformed, or ambiguous evidence yields `UNRESOLVED` rather than raising uncaught exceptions or fabricating false breaches.
+3. **Equivalence Principle Audit:** PASS. Uses `gl.eq_principle.prompt_comparative` comparing core outcome fields while tolerating minor formatting and phrasing variations.
+4. **Syntax & GenVM Lint Audit:** PASS. Verified with `genvm-lint check` (0 errors, 12 methods recognized: 5 view, 7 write) and pytest suite (23/23 passing).
+5. **Live Verification Transaction:** Finalized on StudioNet (`0xd1253b3e8b1c6e1dc13ad6801cd70732c178de7df5acb082f9d7e5824ad406d2`).

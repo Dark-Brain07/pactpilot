@@ -1,0 +1,10 @@
+{
+  "agreement": "PactPilot Demonstration Agreement",
+  "version": "v1",
+  "obligations": [
+    {
+      "key": "uptime-core",
+      "requirement": "Maintain commercially reasonable availability for the PactPilot Demo API during every sealed observation window."
+    }
+  ]
+}

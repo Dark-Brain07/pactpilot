@@ -1,0 +1,8 @@
+.next/
+node_modules/
+.env.local
+artifacts/
+.pytest_cache/
+__pycache__/
+*.pyc
+.vercel/
