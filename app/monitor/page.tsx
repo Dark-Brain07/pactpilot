@@ -36,6 +36,21 @@ export default function Monitor(){
       if(!ver){setNotice({tone:"error",text:"Agreement version is required (e.g. v1)."});return;}
       if(!sha||sha.length!==64||!/^[0-9a-f]{64}$/.test(sha)){setNotice({tone:"error",text:"Clause bundle SHA-256 must be exactly 64 lowercase hexadecimal characters."});return;}
     }
+    if(method==="add_obligation"){
+      const agreeId=String(args[0]||"");
+      if(!agreeId){setNotice({tone:"error",text:"Agreement ID is required before adding obligations."});return;}
+      const verified=await readContract("get_agreement",[agreeId]);
+      const data=verified.success?unwrap<{accepted:boolean;owner:string;counterparty:string}>(verified.data):null;
+      if(!data){setNotice({tone:"error",text:`Agreement #${agreeId} was not found on-chain.`});return;}
+      if(!data.accepted){
+        setNotice({tone:"error",text:`Agreement #${agreeId} has not been accepted yet! In Card 01, switch your wallet to counterparty (${data.counterparty.slice(0,6)}…${data.counterparty.slice(-4)}) and click "Accept agreement" first.`});
+        return;
+      }
+      if(wallet&&data.owner&&data.owner.toLowerCase()!==wallet.toLowerCase()){
+        setNotice({tone:"error",text:`Only the agreement owner (${data.owner.slice(0,6)}…${data.owner.slice(-4)}) can add obligations. Switch back to the owner wallet.`});
+        return;
+      }
+    }
     setNotice({tone:"pending",text:`${label}: waiting for finality and consensus…`});
     const result=await writeContract(method,args);
     if(!result.success){setNotice({tone:"error",text:result.error||`${label} failed.`});return;}
