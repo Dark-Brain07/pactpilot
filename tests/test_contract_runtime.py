@@ -186,3 +186,41 @@ def test_terms_digest_changes_if_any_consequential_policy_field_changes():
         changed = list(args)
         changed[index] = changed[index] + 1 if isinstance(changed[index], int) else changed[index] + "-changed"
         assert contract_module._obligation_terms_digest(*changed) != baseline
+
+
+def test_checkpoint_window_is_anchored_to_scheduled_due_time():
+    contract, now, _agreement_id, obligation_id = new_contract()
+    obligation = json.loads(contract.get_obligation(obligation_id))
+    fake_gl.message.sender_address.as_hex = COUNTERPARTY
+    contract.accept_obligation(obligation_id, obligation["terms_digest"])
+    fake_gl.message.sender_address.as_hex = OWNER
+
+    # Scheduled due time was 1_000_000. Simulate delayed caller calling at 1_000_080.
+    now[0] = 1_000_080
+    checkpoint_id = contract.open_due_checkpoint(obligation_id)
+    checkpoint = json.loads(contract.get_checkpoint(checkpoint_id))
+    assert checkpoint["window_start"] == 1_000_000  # Anchored to scheduled due time!
+    assert checkpoint["window_end"] == 1_000_300    # window_seconds = 300
+
+
+def test_open_assessments_preserved_on_obligation_closure():
+    contract, now, _agreement_id, obligation_id = new_contract()
+    obligation = json.loads(contract.get_obligation(obligation_id))
+    fake_gl.message.sender_address.as_hex = COUNTERPARTY
+    contract.accept_obligation(obligation_id, obligation["terms_digest"])
+    fake_gl.message.sender_address.as_hex = OWNER
+
+    checkpoint_id = contract.open_due_checkpoint(obligation_id)
+    assert json.loads(contract.get_checkpoint(checkpoint_id))["status"] == "OPEN"
+
+    # Owner closes obligation while checkpoint is in-flight
+    contract.close_obligation(obligation_id)
+    assert json.loads(contract.get_obligation(obligation_id))["active"] is False
+
+    # Once window completes, assess_checkpoint must succeed and preserve standing!
+    now[0] = 1_000_300
+    assert contract.assess_checkpoint(checkpoint_id) == "SATISFIED"
+    assessed = json.loads(contract.get_checkpoint(checkpoint_id))
+    assert assessed["status"] == "ASSESSED"
+    assert json.loads(contract.get_obligation(obligation_id))["standing"] == "SATISFIED"
+

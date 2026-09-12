@@ -16,7 +16,7 @@ type RuntimeClient = {
   getTransaction:(args:{hash:`0x${string}`})=>Promise<Record<string,unknown>>;
 };
 export type Result={success:boolean;data?:unknown;hash?:string;error?:string;receipt?:Record<string,unknown>;transaction?:Record<string,unknown>};
-export const DEPLOYED_CONTRACT_ADDRESS = "0x1e52Df397E8230b598e09c0B55338C51bd5555e4";
+export const DEPLOYED_CONTRACT_ADDRESS = "0xC458777c0fb0854578f94179498280F3EFE5917A";
 const address=()=>process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || DEPLOYED_CONTRACT_ADDRESS;
 export const contractAddress=address;
 export const explorerUrl=()=>`${process.env.NEXT_PUBLIC_EXPLORER_BASE||"https://explorer-studio.genlayer.com/address/"}${address()}`;

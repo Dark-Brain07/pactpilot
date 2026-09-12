@@ -6,11 +6,11 @@ PactPilot is a GenLayer temporal commercial assurance primitive. It binds a boun
 
 - **Production App:** [https://pactpilot.vercel.app](https://pactpilot.vercel.app) · [V2 Monitor Console](https://pactpilot.vercel.app/monitor)
 - **Network:** GenLayer StudioNet (Chain ID `61999`)
-- **Contract Address:** [`0x1e52Df397E8230b598e09c0B55338C51bd5555e4`](https://explorer-studio.genlayer.com/address/0x1e52Df397E8230b598e09c0B55338C51bd5555e4)
-- **Explorer Link:** [https://explorer-studio.genlayer.com/address/0x1e52Df397E8230b598e09c0B55338C51bd5555e4](https://explorer-studio.genlayer.com/address/0x1e52Df397E8230b598e09c0B55338C51bd5555e4)
-- **Deployer Address:** `0x38bc66E48D6FD45c640230eAA55774BA22773dA1`
-- **Deploy Transaction Hash:** [`0x3e1275cf48be8a5bfd3e978fe39833bbaaa6350ececa0f63719c19416dabc626`](https://explorer-studio.genlayer.com/tx/0x3e1275cf48be8a5bfd3e978fe39833bbaaa6350ececa0f63719c19416dabc626)
-- **Live Verification Transaction (`register_agreement`):** [`0xd1253b3e8b1c6e1dc13ad6801cd70732c178de7df5acb082f9d7e5824ad406d2`](https://explorer-studio.genlayer.com/tx/0xd1253b3e8b1c6e1dc13ad6801cd70732c178de7df5acb082f9d7e5824ad406d2)
+- **Contract Address:** [`0xC458777c0fb0854578f94179498280F3EFE5917A`](https://explorer-studio.genlayer.com/address/0xC458777c0fb0854578f94179498280F3EFE5917A)
+- **Explorer Link:** [https://explorer-studio.genlayer.com/address/0xC458777c0fb0854578f94179498280F3EFE5917A](https://explorer-studio.genlayer.com/address/0xC458777c0fb0854578f94179498280F3EFE5917A)
+- **Deployer Address:** `0x043430585c0761EDB66CCDe9DD71fD5a56421B87`
+- **Deploy Transaction Hash:** [`0x0489b9bec16455a7da743a89543acbd665671cabb09248f7c9c7eecd96edba80`](https://explorer-studio.genlayer.com/tx/0x0489b9bec16455a7da743a89543acbd665671cabb09248f7c9c7eecd96edba80)
+- **Live Verification Transaction (`register_agreement`):** [`0x0733b8b93d4edec49f9ceb003c012fdab57ea2acd079df6402a334d73200f4e0`](https://explorer-studio.genlayer.com/tx/0x0733b8b93d4edec49f9ceb003c012fdab57ea2acd079df6402a334d73200f4e0)
 
 ---
 
