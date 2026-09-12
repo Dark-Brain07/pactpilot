@@ -10,7 +10,12 @@ PactPilot is a GenLayer temporal commercial assurance primitive. It binds a boun
 - **Explorer Link:** [https://explorer-studio.genlayer.com/address/0xC458777c0fb0854578f94179498280F3EFE5917A](https://explorer-studio.genlayer.com/address/0xC458777c0fb0854578f94179498280F3EFE5917A)
 - **Deployer Address:** `0x043430585c0761EDB66CCDe9DD71fD5a56421B87`
 - **Deploy Transaction Hash:** [`0x0489b9bec16455a7da743a89543acbd665671cabb09248f7c9c7eecd96edba80`](https://explorer-studio.genlayer.com/tx/0x0489b9bec16455a7da743a89543acbd665671cabb09248f7c9c7eecd96edba80)
-- **Live Verification Transaction (`register_agreement`):** [`0x0733b8b93d4edec49f9ceb003c012fdab57ea2acd079df6402a334d73200f4e0`](https://explorer-studio.genlayer.com/tx/0x0733b8b93d4edec49f9ceb003c012fdab57ea2acd079df6402a334d73200f4e0)
+- **Live Verified Transactions on StudioNet:**
+  - **Register Agreement:** [`0x0733b8b93d4edec49f9ceb003c012fdab57ea2acd079df6402a334d73200f4e0`](https://explorer-studio.genlayer.com/tx/0x0733b8b93d4edec49f9ceb003c012fdab57ea2acd079df6402a334d73200f4e0)
+  - **Accept Agreement (Counterparty):** [`0xdb12ae6100157d1af5f05c36075a7b5ef0aaddf86beaed6a1c4036a7a84575a1`](https://explorer-studio.genlayer.com/tx/0xdb12ae6100157d1af5f05c36075a7b5ef0aaddf86beaed6a1c4036a7a84575a1)
+  - **Add Obligation (Owner):** [`0x3a5cc65d50312db6c8e95d5a1d4e4f499a79721288c84c1c328a0e8dd19c9a9e`](https://explorer-studio.genlayer.com/tx/0x3a5cc65d50312db6c8e95d5a1d4e4f499a79721288c84c1c328a0e8dd19c9a9e)
+  - **Accept Terms Digest (Counterparty):** [`0x4e97c7f2fde852e798a85df17c86767c31796b628f39d987904f3e078ba5eca1`](https://explorer-studio.genlayer.com/tx/0x4e97c7f2fde852e798a85df17c86767c31796b628f39d987904f3e078ba5eca1)
+  - **Open Anchored Checkpoint:** [`0xdffc8a9d784033bc3266d2efaf736f33f00346a17a386fd89614d7be826d26d8`](https://explorer-studio.genlayer.com/tx/0xdffc8a9d784033bc3266d2efaf736f33f00346a17a386fd89614d7be826d26d8)
 
 ---
 
