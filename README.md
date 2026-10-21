@@ -1,43 +1,56 @@
-# PactPilot
+# PactPilot V3: Bonded SLA Escrow & Autonomous Financial Remediation
 
-PactPilot is a GenLayer temporal commercial assurance primitive. It binds a bounded obligation to an agreement version, counterparty, approved public source and sealed checkpoint schedule. The counterparty separately accepts an immutable digest of the exact obligation, evidence policy and schedule before monitoring begins. Validators independently fetch and interpret evidence; deterministic code controls consent, provenance, lifecycle and standing updates.
+PactPilot is a GenLayer commercial assurance and trustless SLA settlement protocol. It binds temporal service obligations to agreement versions, counterparties, approved public evidence sources, and **1:1 solvent on-chain performance bonds**. 
 
-## Live Deployment
+Counterparties cryptographically verify and accept an immutable terms digest before monitoring begins. When sealed observation windows elapse, independent GenVM validators evaluate public web evidence via LLM consensus (`gl.eq_principle.prompt_comparative`). If an SLA breach is proven, liquidated damages are deterministically deducted from the provider's bond and credited to the counterparty, available for immediate non-custodial pull-payment withdrawal.
 
-- **Production App:** [https://pactpilot.vercel.app](https://pactpilot.vercel.app) · [V2 Monitor Console](https://pactpilot.vercel.app/monitor)
+---
+
+## Live Deployment (GenLayer StudioNet)
+
+- **Production App:** [https://pactpilot.vercel.app](https://pactpilot.vercel.app) · [SLA Escrow Console](https://pactpilot.vercel.app/monitor)
 - **Network:** GenLayer StudioNet (Chain ID `61999`)
-- **Contract Address:** [`0xC458777c0fb0854578f94179498280F3EFE5917A`](https://explorer-studio.genlayer.com/address/0xC458777c0fb0854578f94179498280F3EFE5917A)
-- **Explorer Link:** [https://explorer-studio.genlayer.com/address/0xC458777c0fb0854578f94179498280F3EFE5917A](https://explorer-studio.genlayer.com/address/0xC458777c0fb0854578f94179498280F3EFE5917A)
-- **Deployer Address:** `0x043430585c0761EDB66CCDe9DD71fD5a56421B87`
-- **Deploy Transaction Hash:** [`0x0489b9bec16455a7da743a89543acbd665671cabb09248f7c9c7eecd96edba80`](https://explorer-studio.genlayer.com/tx/0x0489b9bec16455a7da743a89543acbd665671cabb09248f7c9c7eecd96edba80)
-- **Live Verified Transactions on StudioNet:**
-  - **Register Agreement:** [`0x0733b8b93d4edec49f9ceb003c012fdab57ea2acd079df6402a334d73200f4e0`](https://explorer-studio.genlayer.com/tx/0x0733b8b93d4edec49f9ceb003c012fdab57ea2acd079df6402a334d73200f4e0)
-  - **Accept Agreement (Counterparty):** [`0xdb12ae6100157d1af5f05c36075a7b5ef0aaddf86beaed6a1c4036a7a84575a1`](https://explorer-studio.genlayer.com/tx/0xdb12ae6100157d1af5f05c36075a7b5ef0aaddf86beaed6a1c4036a7a84575a1)
-  - **Add Obligation (Owner):** [`0x3a5cc65d50312db6c8e95d5a1d4e4f499a79721288c84c1c328a0e8dd19c9a9e`](https://explorer-studio.genlayer.com/tx/0x3a5cc65d50312db6c8e95d5a1d4e4f499a79721288c84c1c328a0e8dd19c9a9e)
-  - **Accept Terms Digest (Counterparty):** [`0x4e97c7f2fde852e798a85df17c86767c31796b628f39d987904f3e078ba5eca1`](https://explorer-studio.genlayer.com/tx/0x4e97c7f2fde852e798a85df17c86767c31796b628f39d987904f3e078ba5eca1)
-  - **Open Anchored Checkpoint:** [`0xdffc8a9d784033bc3266d2efaf736f33f00346a17a386fd89614d7be826d26d8`](https://explorer-studio.genlayer.com/tx/0xdffc8a9d784033bc3266d2efaf736f33f00346a17a386fd89614d7be826d26d8)
+- **V3 Intelligent Contract:** [`0x54788Cf3aFA14be81121208BdC64FBA320CA16A9`](https://explorer-studio.genlayer.com/address/0x54788Cf3aFA14be81121208BdC64FBA320CA16A9)
+- **Explorer Link:** [https://explorer-studio.genlayer.com/address/0x54788Cf3aFA14be81121208BdC64FBA320CA16A9](https://explorer-studio.genlayer.com/address/0x54788Cf3aFA14be81121208BdC64FBA320CA16A9)
+- **Deployer Address:** `0xA1052aaD9057D28d48cfe619CC56AB3454EEc81D`
+- **Deploy Transaction Hash:** [`0xba6af2079bb18db133600db0fda8eaa3f916b8ee3c49e92128b112b6b1b12e3c`](https://explorer-studio.genlayer.com/tx/0xba6af2079bb18db133600db0fda8eaa3f916b8ee3c49e92128b112b6b1b12e3c)
+
+### Verified V3 On-Chain Lifecycle Transactions (100% Validator Consensus)
+
+| Lifecycle Stage | Transaction Hash | StudioNet Explorer Proof |
+| :--- | :--- | :--- |
+| **Contract Deployment (V3)** | `0xba6af2079bb18db133600db0fda8eaa3f916b8ee3c49e92128b112b6b1b12e3c` | [View Deployment Tx](https://explorer-studio.genlayer.com/tx/0xba6af2079bb18db133600db0fda8eaa3f916b8ee3c49e92128b112b6b1b12e3c) |
+| **1. Register Agreement** | `0xc6a05e2eb535984ddb36cfcf6e7634ac180d2f7038cf91de2976e21576cfb5e6` | [View Register Tx](https://explorer-studio.genlayer.com/tx/0xc6a05e2eb535984ddb36cfcf6e7634ac180d2f7038cf91de2976e21576cfb5e6) |
+| **2. Accept Agreement (Counterparty)** | `0xbf794041c8fce9a5d4706b92b930d807d6567d1c9fe11bfbee4b3b0fd4562079` | [View Accept Tx](https://explorer-studio.genlayer.com/tx/0xbf794041c8fce9a5d4706b92b930d807d6567d1c9fe11bfbee4b3b0fd4562079) |
+| **3. Add Obligation with SLA Terms** | `0x05fb7a95f44ada5979621502bd80e691d7e0ff37f755bd83a03243b90e522a5a` | [View Obligation Tx](https://explorer-studio.genlayer.com/tx/0x05fb7a95f44ada5979621502bd80e691d7e0ff37f755bd83a03243b90e522a5a) |
+| **4. Accept Obligation Terms Digest** | `0x08f24abee08cb588e776606f26dd844ef36d7c687f306eb9eb0c73bdec27774f` | [View Terms Consent Tx](https://explorer-studio.genlayer.com/tx/0x08f24abee08cb588e776606f26dd844ef36d7c687f306eb9eb0c73bdec27774f) |
+| **5. Deposit SLA Bond (Escrow Lock)** | `0xef25443cead69af8b02ea3458a8494f33e7b88e0088fbcd29b0989bf78212fbf` | [View Escrow Deposit Tx](https://explorer-studio.genlayer.com/tx/0xef25443cead69af8b02ea3458a8494f33e7b88e0088fbcd29b0989bf78212fbf) |
+
+On-chain solvency report verified via `get_solvency_report()`:
+```json
+{
+  "is_solvent": true,
+  "reserved_bonds_wei": 5000,
+  "total_deposited_wei": 5000
+}
+```
 
 ---
 
-## Why GenLayer
+## What Changed in V3 (The Milestone Delta)
 
-External publications often express incidents, certification scope and operational status in unstructured language. The consequential semantic question cannot be reduced to a stable numeric oracle, while source authority, timestamps and lifecycle remain deterministic contract rules.
+PactPilot V2 was intentionally scoped as an observational monitoring registry with *no custody, no collateral, and no automated damages*. 
 
-PactPilot uses GenLayer's built-in non-deterministic LLM execution and Web connectivity:
-- Independent validator nodes fetch the approved public evidence source (`gl.nondet.web.get`).
-- Evaluators check whether the evidence refers to the bound object and whether it supports, warns about, or contradicts the obligation.
-- Consensus is reached via the comparative equivalence principle (`gl.eq_principle.prompt_comparative`).
-- If evidence is unavailable, malformed, or ambiguous, the contract deterministically marks the checkpoint `UNRESOLVED` rather than fabricating a breach.
+**PactPilot V3 transforms this into a full economic assurance and solvent remediation protocol:**
 
----
-
-## Safe MVP Boundary
-
-- **Monitoring registry, not a dispute court:** Records observational standing over time.
-- **No custody or automatic damages:** Operates without fund locks, penalties, or escrow.
-- **Explicit keeper triggers:** Keepers open due checkpoints after each cadence interval; no autonomous execution is assumed.
-- **Fail-closed evidence:** Missing or inadequate evidence yields `UNRESOLVED`, never `BREACHED`. A breach requires explicit contradictory evidence.
-- **Privacy preserving:** No private agreement documents or sensitive text are placed on-chain.
+1. **Bonded SLA Escrow (`deposit_obligation_bond`)**: Service providers lock GEN performance collateral on-chain to back their availability or certification commitments.
+2. **Strict 1:1 Solvency Accounting**: Invariant `total_deposited_wei >= reserved_bonds_wei` guarantees the contract is solvent at all times, preventing over-allocation or drain attacks.
+3. **Autonomous AI-Settled Financial Remediation**:
+   - **`BREACHED`**: Contract automatically slashes liquidated damages from the provider's bond and credits them to the counterparty's claimable balance.
+   - **`SATISFIED`**: Periodic retainer fee is unlocked to the provider.
+   - **`UNRESOLVED`**: Fail-closed protection holds all funds intact without false slashes.
+4. **Non-Custodial Pull-Payment Pattern (`withdraw_balance`)**: Credited damages and retainers are claimed via direct pull-payments routed through the GenVM EVM bridge (`_send_gen`), eliminating reentrancy and out-of-gas risks.
+5. **New Interactive Workspace**: The frontend monitor console now includes an interactive **SLA Escrow & Solvency Vault** card to fund bonds, inspect real-time solvency ratios, and withdraw remedies in one click.
 
 ---
 
@@ -46,34 +59,36 @@ PactPilot uses GenLayer's built-in non-deterministic LLM execution and Web conne
 ### Writes
 - `register_agreement(counterparty, name, version, clause_digest)`: Register a new agreement version and digest.
 - `accept_agreement(agreement_id)`: Counterparty accepts the agreement terms.
-- `add_obligation(agreement_id, obligation_key, kind, title, requirement, authority_origin, evidence_url, object_marker, cadence_seconds, window_seconds)`: Add an obligation to an accepted agreement.
-- `accept_obligation(obligation_id, expected_terms_digest)`: Counterparty accepts the exact immutable terms digest.
+- `add_obligation(agreement_id, obligation_key, kind, title, requirement, authority_origin, evidence_url, object_marker, cadence_seconds, window_seconds, bond_amount_wei, penalty_per_breach_wei, retainer_payout_wei)`: Add an obligation with bound SLA financial terms.
+- `accept_obligation(obligation_id, expected_terms_digest)`: Counterparty accepts exact terms and bond digest.
+- `deposit_obligation_bond(obligation_id, amount_wei)`: Service provider funds performance collateral into escrow.
 - `open_due_checkpoint(obligation_id)`: Open a checkpoint when due.
-- `assess_checkpoint(checkpoint_id)`: Run validator consensus to judge public evidence after the window closes.
-- `close_obligation(obligation_id)`: Close an active obligation.
+- `assess_checkpoint(checkpoint_id)`: Independent GenVM validators reach consensus on evidence; triggers automatic financial settlement.
+- `withdraw_balance()`: Non-custodial pull-payment withdrawal of credited remedies or retainers.
+- `close_obligation(obligation_id)`: Closes obligation and refunds remaining unslashed bond to owner.
 
 ### Views
-- `get_contract_version()`: Returns contract metadata and consent schema version (`{"name": "PactPilot", "version": 2, "consent_schema": "exact-obligation-digest"}`).
-- `get_agreement(agreement_id)`: Returns agreement state and accepted status.
-- `get_obligation(obligation_id)`: Returns obligation configuration, terms digest, and current standing.
-- `get_checkpoint(checkpoint_id)`: Returns checkpoint assessment results, material facts, and rationale.
-- `get_totals()`: Returns counts of registered agreements, obligations, and checkpoints.
+- `get_contract_version()`: Returns metadata (`{"name": "PactPilot", "version": 3, "consent_schema": "exact-obligation-digest", "financial_engine": "solvent-sla-escrow"}`).
+- `get_solvency_report()`: Returns total deposited, reserved bonds, and mathematical solvency verification.
+- `get_claimable_balance(account)`: Returns user's withdrawable balance in wei.
+- `get_agreement(agreement_id)`: Agreement details and acceptance status.
+- `get_obligation(obligation_id)`: Obligation terms, bonded collateral, and standing.
+- `get_checkpoint(checkpoint_id)`: Checkpoint status, evidence hash, facts, and settlement status.
+- `get_totals()`: Aggregated counts and contract escrow balances.
 
 ---
 
 ## Local Verification & Testing
 
-Run the full automated test suite and linter:
-
 ```powershell
-# 1. Run Python unit and mock runtime tests (23 tests)
+# 1. Run Python test suite (35 automated unit & invariant tests)
 python -m pytest tests -q
 
-# 2. Run GenVM AST and semantic validation
+# 2. Run GenVM AST linter
 $env:PYTHONUTF8='1'
-genvm-lint check contracts\PactPilot.py
+genvm-lint check contracts\PactPilot.py --json
 
-# 3. Run client & receipt TypeScript tests (8 tests)
+# 3. Run client TypeScript tests (8 tests)
 npm test
 
 # 4. Run Next.js production build
@@ -85,11 +100,8 @@ npm run build
 ## Running the Web Application
 
 ```powershell
-# Install dependencies
 npm install
-
-# Start the development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the landing page, or [http://localhost:3000/monitor](http://localhost:3000/monitor) to open the interactive obligation console.
+Open [http://localhost:3000](http://localhost:3000) for the landing page or [http://localhost:3000/monitor](http://localhost:3000/monitor) for the interactive Obligation & SLA Escrow Console.

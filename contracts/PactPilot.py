@@ -15,6 +15,24 @@ MAX_FACTS = 6
 MAX_BODY = 120_000
 
 
+@gl.evm.contract_interface
+class _Recipient:
+    class View:
+        pass
+
+    class Write:
+        pass
+
+
+def _send_gen(to_address: str, amount: u256) -> None:
+    """Outbound GEN transfer via the GenVM EVM interface bridge."""
+    if not to_address:
+        raise gl.vm.UserError("MISSING_RECIPIENT")
+    if amount <= u256(0):
+        raise gl.vm.UserError("INVALID_AMOUNT")
+    _Recipient(Address(to_address)).emit_transfer(value=amount)
+
+
 @allow_storage
 @dataclass
 class Agreement:
@@ -50,6 +68,10 @@ class Obligation:
     active: bool
     standing: str
     latest_checkpoint_id: str
+    bond_amount_wei: u256
+    funded_bond_wei: u256
+    penalty_per_breach_wei: u256
+    retainer_payout_wei: u256
 
 
 @allow_storage
@@ -68,6 +90,8 @@ class Checkpoint:
     snapshot_sha256: str
     material_facts_json: str
     rationale: str
+    settlement_status: str
+    remedy_amount_wei: u256
 
 
 def _address(value: str) -> bool:
@@ -134,6 +158,7 @@ def _obligation_terms_digest(
     obligation_key: str, kind: str, title: str, requirement: str,
     authority_origin: str, evidence_url: str, object_marker: str,
     cadence_seconds: int, window_seconds: int,
+    bond_amount_wei: int, penalty_per_breach_wei: int, retainer_payout_wei: int,
 ) -> str:
     """Commit every immutable field the counterparty accepts for one obligation."""
     canonical = json.dumps({
@@ -151,6 +176,9 @@ def _obligation_terms_digest(
         "object_marker": object_marker,
         "cadence_seconds": cadence_seconds,
         "window_seconds": window_seconds,
+        "bond_amount_wei": bond_amount_wei,
+        "penalty_per_breach_wei": penalty_per_breach_wei,
+        "retainer_payout_wei": retainer_payout_wei,
     }, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
@@ -223,11 +251,16 @@ class PactPilot(gl.Contract):
     next_agreement_id: bigint
     next_obligation_id: bigint
     next_checkpoint_id: bigint
+    total_deposited_wei: u256
+    reserved_bonds_wei: u256
+    claimable_balances: TreeMap[str, u256]
 
     def __init__(self):
         self.next_agreement_id = bigint(0)
         self.next_obligation_id = bigint(0)
         self.next_checkpoint_id = bigint(0)
+        self.total_deposited_wei = u256(0)
+        self.reserved_bonds_wei = u256(0)
 
     def _now(self) -> int:
         return int(time.time())
@@ -267,6 +300,7 @@ class PactPilot(gl.Contract):
         self, agreement_id: str, obligation_key: str, kind: str, title: str,
         requirement: str, authority_origin: str, evidence_url: str,
         object_marker: str, cadence_seconds: int, window_seconds: int,
+        bond_amount_wei: int = 0, penalty_per_breach_wei: int = 0, retainer_payout_wei: int = 0,
     ) -> str:
         if agreement_id not in self.agreements:
             raise gl.vm.UserError("AGREEMENT_NOT_FOUND")
@@ -282,6 +316,11 @@ class PactPilot(gl.Contract):
         marker = _text(object_marker, 3, 120)
         cadence = int(cadence_seconds)
         window = int(window_seconds)
+        bond_val = max(0, int(bond_amount_wei or 0))
+        penalty_val = max(0, int(penalty_per_breach_wei or 0))
+        retainer_val = max(0, int(retainer_payout_wei or 0))
+        if penalty_val > bond_val:
+            raise gl.vm.UserError("PENALTY_EXCEEDS_BOND")
         if not agreement.active or not agreement.accepted:
             raise gl.vm.UserError("AGREEMENT_NOT_ACCEPTED")
         if not key or storage_key in self.obligation_keys:
@@ -299,6 +338,7 @@ class PactPilot(gl.Contract):
             str(agreement.version), str(agreement.clause_digest), key,
             clean_kind, clean_title, clean_requirement, origin, evidence_url,
             marker, cadence, window,
+            bond_val, penalty_val, retainer_val,
         )
         self.obligations[obligation_id] = Obligation(
             agreement_id=agreement_id, owner=agreement.owner, obligation_key=key,
@@ -310,6 +350,10 @@ class PactPilot(gl.Contract):
             sequence=bigint(0), terms_digest=terms_digest, accepted=False,
             accepted_at=bigint(0), active=True, standing="UNRESOLVED",
             latest_checkpoint_id="",
+            bond_amount_wei=u256(bond_val),
+            funded_bond_wei=u256(0),
+            penalty_per_breach_wei=u256(penalty_val),
+            retainer_payout_wei=u256(retainer_val),
         )
         self.obligation_keys[storage_key] = True
         self.next_obligation_id += bigint(1)
@@ -330,6 +374,30 @@ class PactPilot(gl.Contract):
             raise gl.vm.UserError("OBLIGATION_NOT_ACCEPTABLE")
         obligation.accepted = True
         obligation.accepted_at = bigint(self._now())
+
+    @gl.public.write
+    def deposit_obligation_bond(self, obligation_id: str, amount_wei: int = 0) -> str:
+        """Lock GEN SLA performance bond into contract escrow."""
+        if obligation_id not in self.obligations:
+            raise gl.vm.UserError("OBLIGATION_NOT_FOUND")
+        obligation = self.obligations[obligation_id]
+        if not obligation.active:
+            raise gl.vm.UserError("OBLIGATION_INACTIVE")
+        caller = gl.message.sender_address.as_hex.lower()
+        if caller != obligation.owner:
+            raise gl.vm.UserError("OWNER_ONLY")
+        deposit = gl.message.value if gl.message.value > u256(0) else u256(max(0, int(amount_wei or 0)))
+        if deposit <= u256(0):
+            raise gl.vm.UserError("ZERO_DEPOSIT")
+        obligation.funded_bond_wei += deposit
+        self.total_deposited_wei += deposit
+        self.reserved_bonds_wei += deposit
+        return json.dumps({
+            "obligation_id": obligation_id,
+            "deposited_wei": int(deposit),
+            "funded_bond_wei": int(obligation.funded_bond_wei),
+            "total_reserved_wei": int(self.reserved_bonds_wei),
+        }, sort_keys=True)
 
     @gl.public.write
     def open_due_checkpoint(self, obligation_id: str) -> str:
@@ -361,6 +429,7 @@ class PactPilot(gl.Contract):
             observed_at=bigint(0), status="OPEN", semantic_state="UNRESOLVED",
             coverage="INSUFFICIENT", scope_relation="UNKNOWN", snapshot_sha256="",
             material_facts_json="[]", rationale="Awaiting independent observation.",
+            settlement_status="NONE", remedy_amount_wei=u256(0),
         )
         self.checkpoint_keys[unique] = True
         self.next_checkpoint_id += bigint(1)
@@ -428,11 +497,13 @@ class PactPilot(gl.Contract):
         if "source_error" in resolved:
             checkpoint.status = "UNRESOLVED"
             checkpoint.rationale = str(resolved.get("source_error", "SOURCE_ERROR"))[:80]
+            checkpoint.settlement_status = "FAIL_CLOSED_HOLD"
             return "UNRESOLVED"
         if resolved.get("jury_error") == "INVALID_MODEL_OUTPUT":
             checkpoint.status = "UNRESOLVED"
             checkpoint.snapshot_sha256 = str(resolved.get("sha256", ""))
             checkpoint.rationale = "INVALID_MODEL_OUTPUT"
+            checkpoint.settlement_status = "FAIL_CLOSED_HOLD"
             return "UNRESOLVED"
         result = _normalize(resolved.get("result"))
         digest = str(resolved.get("sha256", ""))
@@ -447,7 +518,61 @@ class PactPilot(gl.Contract):
         checkpoint.rationale = str(result["rationale"])
         obligation.standing = checkpoint.semantic_state
         obligation.latest_checkpoint_id = checkpoint_id
+
+        # Autonomous Financial Remediation & Solvency Settlement:
+        if checkpoint.semantic_state == "BREACHED":
+            penalty = obligation.penalty_per_breach_wei
+            if penalty > u256(0):
+                damage = penalty if obligation.funded_bond_wei >= penalty else obligation.funded_bond_wei
+                if damage > u256(0):
+                    obligation.funded_bond_wei -= damage
+                    self.reserved_bonds_wei -= damage
+                    party = str(agreement.counterparty)
+                    cur = self.claimable_balances[party] if party in self.claimable_balances else u256(0)
+                    self.claimable_balances[party] = cur + damage
+                    checkpoint.settlement_status = "REMEDY_CREDITED"
+                    checkpoint.remedy_amount_wei = damage
+                else:
+                    checkpoint.settlement_status = "BOND_EXHAUSTED"
+                    checkpoint.remedy_amount_wei = u256(0)
+            else:
+                checkpoint.settlement_status = "NO_FINANCIAL_PENALTY"
+                checkpoint.remedy_amount_wei = u256(0)
+        elif checkpoint.semantic_state == "SATISFIED":
+            retainer = obligation.retainer_payout_wei
+            if retainer > u256(0) and obligation.funded_bond_wei >= retainer:
+                obligation.funded_bond_wei -= retainer
+                self.reserved_bonds_wei -= retainer
+                owner = str(obligation.owner)
+                cur = self.claimable_balances[owner] if owner in self.claimable_balances else u256(0)
+                self.claimable_balances[owner] = cur + retainer
+                checkpoint.settlement_status = "RETAINER_RELEASED"
+                checkpoint.remedy_amount_wei = retainer
+            else:
+                checkpoint.settlement_status = "SATISFIED_NO_PAYOUT"
+                checkpoint.remedy_amount_wei = u256(0)
+        elif checkpoint.semantic_state == "AT_RISK":
+            checkpoint.settlement_status = "GRACE_PERIOD_NOTICE"
+            checkpoint.remedy_amount_wei = u256(0)
+        else:
+            checkpoint.settlement_status = "FAIL_CLOSED_HOLD"
+            checkpoint.remedy_amount_wei = u256(0)
+
         return checkpoint.semantic_state
+
+    @gl.public.write
+    def withdraw_balance(self) -> int:
+        """Non-custodial pull-payment pattern to withdraw credited remedies/retainers."""
+        caller = gl.message.sender_address.as_hex.lower()
+        if caller not in self.claimable_balances:
+            raise gl.vm.UserError("NO_BALANCE")
+        amount = self.claimable_balances[caller]
+        if amount <= u256(0):
+            raise gl.vm.UserError("ZERO_BALANCE")
+        self.claimable_balances[caller] = u256(0)
+        self.total_deposited_wei -= amount
+        _send_gen(caller, amount)
+        return int(amount)
 
     @gl.public.write
     def close_obligation(self, obligation_id: str) -> None:
@@ -459,10 +584,37 @@ class PactPilot(gl.Contract):
         if not obligation.active:
             raise gl.vm.UserError("OBLIGATION_INACTIVE")
         obligation.active = False
+        remaining = obligation.funded_bond_wei
+        if remaining > u256(0):
+            obligation.funded_bond_wei = u256(0)
+            self.reserved_bonds_wei -= remaining
+            owner = str(obligation.owner)
+            cur = self.claimable_balances[owner] if owner in self.claimable_balances else u256(0)
+            self.claimable_balances[owner] = cur + remaining
 
     @gl.public.view
     def get_contract_version(self) -> str:
-        return json.dumps({"name": "PactPilot", "version": 2, "consent_schema": "exact-obligation-digest"}, sort_keys=True)
+        return json.dumps({
+            "name": "PactPilot",
+            "version": 3,
+            "consent_schema": "exact-obligation-digest",
+            "financial_engine": "solvent-sla-escrow",
+        }, sort_keys=True)
+
+    @gl.public.view
+    def get_claimable_balance(self, account: str) -> int:
+        target = str(account or "").lower()
+        if target in self.claimable_balances:
+            return int(self.claimable_balances[target])
+        return 0
+
+    @gl.public.view
+    def get_solvency_report(self) -> str:
+        return json.dumps({
+            "total_deposited_wei": int(self.total_deposited_wei),
+            "reserved_bonds_wei": int(self.reserved_bonds_wei),
+            "is_solvent": bool(self.total_deposited_wei >= self.reserved_bonds_wei),
+        }, sort_keys=True)
 
     @gl.public.view
     def get_agreement(self, agreement_id: str) -> str:
@@ -476,15 +628,63 @@ class PactPilot(gl.Contract):
         if obligation_id not in self.obligations:
             raise gl.vm.UserError("OBLIGATION_NOT_FOUND")
         item = self.obligations[obligation_id]
-        return json.dumps({"obligation_id": obligation_id, "agreement_id": str(item.agreement_id), "owner": str(item.owner), "obligation_key": str(item.obligation_key), "kind": str(item.kind), "title": str(item.title), "requirement": str(item.requirement), "authority_origin": str(item.authority_origin), "evidence_url": str(item.evidence_url), "object_marker": str(item.object_marker), "cadence_seconds": int(item.cadence_seconds), "window_seconds": int(item.window_seconds), "next_due_at": int(item.next_due_at), "sequence": int(item.sequence), "terms_digest": str(item.terms_digest), "accepted": bool(item.accepted), "accepted_at": int(item.accepted_at), "active": bool(item.active), "standing": str(item.standing), "latest_checkpoint_id": str(item.latest_checkpoint_id)}, sort_keys=True)
+        return json.dumps({
+            "obligation_id": obligation_id,
+            "agreement_id": str(item.agreement_id),
+            "owner": str(item.owner),
+            "obligation_key": str(item.obligation_key),
+            "kind": str(item.kind),
+            "title": str(item.title),
+            "requirement": str(item.requirement),
+            "authority_origin": str(item.authority_origin),
+            "evidence_url": str(item.evidence_url),
+            "object_marker": str(item.object_marker),
+            "cadence_seconds": int(item.cadence_seconds),
+            "window_seconds": int(item.window_seconds),
+            "next_due_at": int(item.next_due_at),
+            "sequence": int(item.sequence),
+            "terms_digest": str(item.terms_digest),
+            "accepted": bool(item.accepted),
+            "accepted_at": int(item.accepted_at),
+            "active": bool(item.active),
+            "standing": str(item.standing),
+            "latest_checkpoint_id": str(item.latest_checkpoint_id),
+            "bond_amount_wei": int(item.bond_amount_wei),
+            "funded_bond_wei": int(item.funded_bond_wei),
+            "penalty_per_breach_wei": int(item.penalty_per_breach_wei),
+            "retainer_payout_wei": int(item.retainer_payout_wei),
+        }, sort_keys=True)
 
     @gl.public.view
     def get_checkpoint(self, checkpoint_id: str) -> str:
         if checkpoint_id not in self.checkpoints:
             raise gl.vm.UserError("CHECKPOINT_NOT_FOUND")
         item = self.checkpoints[checkpoint_id]
-        return json.dumps({"checkpoint_id": checkpoint_id, "obligation_id": str(item.obligation_id), "agreement_version": str(item.agreement_version), "sequence": int(item.sequence), "window_start": int(item.window_start), "window_end": int(item.window_end), "observed_at": int(item.observed_at), "status": str(item.status), "semantic_state": str(item.semantic_state), "coverage": str(item.coverage), "scope_relation": str(item.scope_relation), "snapshot_sha256": str(item.snapshot_sha256), "material_facts": json.loads(str(item.material_facts_json)), "rationale": str(item.rationale)}, sort_keys=True)
+        return json.dumps({
+            "checkpoint_id": checkpoint_id,
+            "obligation_id": str(item.obligation_id),
+            "agreement_version": str(item.agreement_version),
+            "sequence": int(item.sequence),
+            "window_start": int(item.window_start),
+            "window_end": int(item.window_end),
+            "observed_at": int(item.observed_at),
+            "status": str(item.status),
+            "semantic_state": str(item.semantic_state),
+            "coverage": str(item.coverage),
+            "scope_relation": str(item.scope_relation),
+            "snapshot_sha256": str(item.snapshot_sha256),
+            "material_facts": json.loads(str(item.material_facts_json)),
+            "rationale": str(item.rationale),
+            "settlement_status": str(item.settlement_status),
+            "remedy_amount_wei": int(item.remedy_amount_wei),
+        }, sort_keys=True)
 
     @gl.public.view
     def get_totals(self) -> str:
-        return json.dumps({"agreements": int(self.next_agreement_id), "obligations": int(self.next_obligation_id), "checkpoints": int(self.next_checkpoint_id)}, sort_keys=True)
+        return json.dumps({
+            "agreements": int(self.next_agreement_id),
+            "obligations": int(self.next_obligation_id),
+            "checkpoints": int(self.next_checkpoint_id),
+            "total_deposited_wei": int(self.total_deposited_wei),
+            "reserved_bonds_wei": int(self.reserved_bonds_wei),
+        }, sort_keys=True)

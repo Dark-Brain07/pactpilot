@@ -16,7 +16,7 @@ type RuntimeClient = {
   getTransaction:(args:{hash:`0x${string}`})=>Promise<Record<string,unknown>>;
 };
 export type Result={success:boolean;data?:unknown;hash?:string;error?:string;receipt?:Record<string,unknown>;transaction?:Record<string,unknown>};
-export const DEPLOYED_CONTRACT_ADDRESS = "0xC458777c0fb0854578f94179498280F3EFE5917A";
+export const DEPLOYED_CONTRACT_ADDRESS = "0x54788Cf3aFA14be81121208BdC64FBA320CA16A9";
 const address=()=>process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || DEPLOYED_CONTRACT_ADDRESS;
 export const contractAddress=address;
 export const explorerUrl=()=>`${process.env.NEXT_PUBLIC_EXPLORER_BASE||"https://explorer-studio.genlayer.com/address/"}${address()}`;
@@ -30,14 +30,14 @@ export async function readContract(functionName:string,args:unknown[]=[]):Promis
   try{return{success:true,data:await(readClient as unknown as RuntimeClient).readContract({address:address(),functionName,args})};}
   catch(error){return{success:false,error:error instanceof Error?error.message:"Contract read failed."};}
 }
-export async function writeContract(functionName:string,args:unknown[]=[]):Promise<Result>{
+export async function writeContract(functionName:string,args:unknown[]=[],value:bigint=BigInt(0)):Promise<Result>{
   if(!window.ethereum)return{success:false,error:"Connect a wallet before writing."};
   if(!address()||/^0x0{40}$/i.test(address()))return{success:false,error:"Deploy and configure the contract first."};
   let hash="";
   try{
     const accounts=await window.ethereum.request({method:"eth_requestAccounts"}) as string[];
     const client=createClient({chain:chains[network]??studionet,provider:window.ethereum,account:accounts[0] as `0x${string}`}) as unknown as RuntimeClient;
-    const raw=await client.writeContract({address:address(),functionName,args,value:BigInt(0)});hash=typeof raw==="string"?raw:raw.txId;
+    const raw=await client.writeContract({address:address(),functionName,args,value});hash=typeof raw==="string"?raw:raw.txId;
     const receipt=await client.waitForTransactionReceipt({hash:hash as `0x${string}`,status:TransactionStatus.FINALIZED,interval:2000,retries:600});
     const transaction=await client.getTransaction({hash:hash as `0x${string}`});
     const failure=finalizedFailure(transaction);if(failure)return{success:false,hash,error:failure,receipt,transaction};
