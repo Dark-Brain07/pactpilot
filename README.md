@@ -9,6 +9,10 @@ Counterparties cryptographically verify and accept an immutable terms digest bef
 ## Live Deployment (GenLayer StudioNet)
 
 - **Production App:** [https://pactpilot.vercel.app](https://pactpilot.vercel.app) · [SLA Escrow Console](https://pactpilot.vercel.app/monitor)
+- **Immutable GitHub Comparison (V2 Accepted ➔ V3 Milestone):**  
+  [https://github.com/Dark-Brain07/pactpilot/compare/bd6963985d5f4d183c32e2f321bc1537eac9c8a8...f32b79f0801aa81f2fa49b089e700337f83d3f2b](https://github.com/Dark-Brain07/pactpilot/compare/bd6963985d5f4d183c32e2f321bc1537eac9c8a8...f32b79f0801aa81f2fa49b089e700337f83d3f2b)
+- **Baseline Commit (Last Rewarded V2):** [`bd6963985d5f4d183c32e2f321bc1537eac9c8a8`](https://github.com/Dark-Brain07/pactpilot/commit/bd6963985d5f4d183c32e2f321bc1537eac9c8a8)
+- **Milestone Commit (Exact Full V3):** [`f32b79f0801aa81f2fa49b089e700337f83d3f2b`](https://github.com/Dark-Brain07/pactpilot/commit/f32b79f0801aa81f2fa49b089e700337f83d3f2b)
 - **Network:** GenLayer StudioNet (Chain ID `61999`)
 - **V3 Intelligent Contract:** [`0x54788Cf3aFA14be81121208BdC64FBA320CA16A9`](https://explorer-studio.genlayer.com/address/0x54788Cf3aFA14be81121208BdC64FBA320CA16A9)
 - **Explorer Link:** [https://explorer-studio.genlayer.com/address/0x54788Cf3aFA14be81121208BdC64FBA320CA16A9](https://explorer-studio.genlayer.com/address/0x54788Cf3aFA14be81121208BdC64FBA320CA16A9)

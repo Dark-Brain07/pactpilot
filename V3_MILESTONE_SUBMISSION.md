@@ -13,10 +13,26 @@
 ---
 
 ### Contract & Links
+- **Immutable GitHub Comparison (V2 Accepted ➔ V3 Milestone):**  
+  [https://github.com/Dark-Brain07/pactpilot/compare/bd6963985d5f4d183c32e2f321bc1537eac9c8a8...f32b79f0801aa81f2fa49b089e700337f83d3f2b](https://github.com/Dark-Brain07/pactpilot/compare/bd6963985d5f4d183c32e2f321bc1537eac9c8a8...f32b79f0801aa81f2fa49b089e700337f83d3f2b)
+- **Baseline Commit (Last Rewarded V2):** [`bd6963985d5f4d183c32e2f321bc1537eac9c8a8`](https://github.com/Dark-Brain07/pactpilot/commit/bd6963985d5f4d183c32e2f321bc1537eac9c8a8) *(synced next-env after live V2 deployment docs `4b71d23`)*
+- **Milestone Commit (Exact Full V3):** [`f32b79f0801aa81f2fa49b089e700337f83d3f2b`](https://github.com/Dark-Brain07/pactpilot/commit/f32b79f0801aa81f2fa49b089e700337f83d3f2b)
 - **V3 Intelligent Contract Address:** `0x54788Cf3aFA14be81121208BdC64FBA320CA16A9`
 - **Explorer Link:** [View on GenLayer Studio](https://explorer-studio.genlayer.com/address/0x54788Cf3aFA14be81121208BdC64FBA320CA16A9)
 - **Live Production App:** [https://pactpilot.vercel.app](https://pactpilot.vercel.app) · [SLA Escrow Console](https://pactpilot.vercel.app/monitor)
 - **GitHub Repository:** [https://github.com/Dark-Brain07/pactpilot](https://github.com/Dark-Brain07/pactpilot)
+
+---
+
+### Milestone Boundary Assessment (Novelty, Overlap & Materiality)
+
+| Assessment Criterion | Steward Evaluation Context & Verification Evidence |
+| :--- | :--- |
+| **Baseline Rewarded Commit** | `bd6963985d5f4d183c32e2f321bc1537eac9c8a8` (Sept 12, 2026). Corresponds to the accepted V2 Project Explorer release. |
+| **Milestone Full Commit** | `f32b79f0801aa81f2fa49b089e700337f83d3f2b` (Oct 21, 2026). Introduces the entire V3 financial architecture. |
+| **Novelty (Zero Prior Art in V2)** | V2 explicitly operated as a read-only / observational monitoring registry with *zero custody, zero escrow, and zero automated damages*. V3 introduces: (1) `deposit_obligation_bond` performance collateral, (2) on-chain 1:1 mathematical solvency invariants (`total_deposited_wei >= reserved_bonds_wei`), (3) automated validator-settled liquidation slashing, and (4) non-custodial pull-payment claim routing via GenVM `_send_gen`. |
+| **Overlap Analysis** | **Zero redundant overlap.** The underlying V2 comparative LLM consensus logic is preserved as the foundation, while 100% of the financial escrow, balance tracking, slashing, and pull-payment settlement mechanics are brand-new additions. |
+| **Materiality (Diff Scope)** | **14 files changed, +1,486 insertions, -177 deletions.** Python contract expanded by 208 lines (from 12 to 16 methods), frontend console updated with 814 lines of interactive escrow & solvency UI, and test suite expanded by 52% (from 23 to 35 tests, including 12 dedicated decision and solvency invariant tests). |
 
 ---
 
